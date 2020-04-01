@@ -49,7 +49,7 @@
 
 <script>
 export default {
-  name: 'Hypertube',
+  name: 'Login',
   data () {
     return {
       email: '',

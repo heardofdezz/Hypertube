@@ -7,4 +7,8 @@ module.exports = {
         user: process.env.DB_USER || 'maloua-h',
         password: process.env.DB_PW || 'hypertube42',
     },
+    //Token auth using jsonwebtoken
+    authentification: {
+        jwtSecret: process.env.JWT_SECRET || 'secret' 
+    }
 }
