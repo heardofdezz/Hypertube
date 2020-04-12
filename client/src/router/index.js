@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hypertube from '@/components/Login'
+import Login from '@/components/Login'
 import Signup from '@/components/Signup'
 Vue.use(Router)
 
