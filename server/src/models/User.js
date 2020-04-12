@@ -8,7 +8,7 @@ const saltRounds = 10
 mongoose.set('useCreateIndex', true);
 const userSchema = mongoose.Schema({ 
     _id: mongoose.Types.ObjectId,
-    email: String,
+    email: { type: String, index: true, unique: true },
     username: String,
     firstname: String,
     lastname: String,

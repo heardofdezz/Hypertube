@@ -4,7 +4,7 @@ const Joi = require('joi')
 module.exports = {
     register (req, res, next){
         const schema = {
-            email: Joi.string().email().required().unique(),
+            email: Joi.string().email().required(),
             username: Joi.string().required(),
             lastname: Joi.string(),
             firstname: Joi.string(),
@@ -13,7 +13,6 @@ module.exports = {
             )
         }
         const{error, value } = Joi.validate(req.body, schema)
-        console.log(Joi.validate(req.body, schema))
         if(error){
             switch (error.details[0].context.key) {
                 case 'email':
