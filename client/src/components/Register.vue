@@ -12,30 +12,35 @@
               <v-card-text>
                 <v-form name="signup-form" autocomplete="off">
                   <v-text-field
+                  v-model="email"
                     label="Email"
                     name="email"
                     type="text"
                   ></v-text-field>
 
                    <v-text-field
+                   v-model="username"
                     label="Username"
                     name="username"
                     type="text"
                   ></v-text-field>
 
                   <v-text-field
+                    v-model="firstname"
                     label="First Name"
                     name="firstname"
                     type="text"
                   ></v-text-field>
 
                    <v-text-field
+                   v-model="lastname"
                     label="Last Name"
                     name="lastname"
                     type="text"
                   ></v-text-field>
 
                   <v-text-field
+                    v-model="password"
                     id="password"
                     label="Password"
                     name="password"
@@ -46,11 +51,16 @@
                     id="password2"
                     label="Type Your Password Again"
                     name="password2"
-                    type="password2"
+                    type="password"
                   ></v-text-field>
+                    </v-form>
+                  <br>
+                    <div class="error" v-html="error" />
+                  <br>
 
-                   <v-btn color="#4CAF50">Sign Up</v-btn>
-                </v-form>
+                   <v-btn 
+                   @click="register"
+                   color="#4CAF50">Sign Up</v-btn>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -58,12 +68,38 @@
   </div>
 </template>
 <script>
+import UsersService from '@/services/UsersService'
 export default {
-  name: 'Hypertube',
   data () {
-    return {};
+    return {
+        email:'',
+        username:'',
+        firstname:'',
+        lastname:'',
+        password: '',
+        error: null
+    }
+  },
+  methods: {
+    async register() {
+      try{
+            const response = await UsersService.register({
+              email: this.email,
+              username: this.username,
+              firstname: this.firstname,
+              lastname: this.lastname,
+              password: this.password
+        })
+        console.log(response)
+        // this.$store.dispatch('setToken', response.data.token)
+        // this.$store.dispatch('setUser', response.data.user)
+     } catch (error){
+       this.error = error.response.data.error
+     }    
+        console.log('register button has been clicked', this.email, this.password)
+    }
   }
-}
+  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
