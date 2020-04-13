@@ -38,11 +38,13 @@ Get list of available categories
 
         ["action", "crime", "drama", "..."]
 
-## Get movies by category [/get-movies-by-category/{category}]
+## Get movies by category [/get-movies-by-category/{category}{?limit}{?page}]
 
 + parameters
 
     + category: action (required, string) - Name of the category
+    + limit: 20 (optional, number) - Number of movies by page
+    + page: 3 (optional, number) - Page's number
 
 ### Get movies by category [GET]
 Get all movies available matching with the category.

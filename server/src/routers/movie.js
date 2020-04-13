@@ -44,7 +44,10 @@ router.get('/categories', async(req, res) => {
 router.get('/get-movies-by-category/:category', async(req, res) => {
     try {
         const pattern = '^' + req.params.category + '$';
-        const movies = await Movie.find({genres: {$all: [new RegExp(pattern, 'i')]}});
+
+        const limit = req.query ? req.query.limit : undefined;
+        const skip = req.query ? req.query.page : undefined;
+        const movies = await Movie.find({genres: {$all: [new RegExp(pattern, 'i')]}}).limit(Number(limit)).skip(Number(skip));
         let results = movies.map((movie) => movie.toObject());
         results.forEach((result) => {
             delete result.torrent;
