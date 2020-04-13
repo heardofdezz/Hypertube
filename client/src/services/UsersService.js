@@ -1,7 +1,7 @@
 import Api from '@/services/Api'
 
 export default {
-    signup (informations) {
+    register (informations) {
         return Api().post('register', informations)
     },
     login (informations) {

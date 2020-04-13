@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hypertube from '@/components/Login'
-import Signup from '@/components/Signup'
+import Login from '@/components/Login'
+import Register from '@/components/Register'
+
 Vue.use(Router)
 
 export default new Router({
@@ -13,8 +14,8 @@ export default new Router({
     },
     {
       path: '/Register',
-      name: 'Sign Up',
-      component: Signup
+      name: 'Register',
+      component: Register
     },
     {
       path: '',
