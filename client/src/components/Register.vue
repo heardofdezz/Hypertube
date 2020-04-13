@@ -53,9 +53,14 @@
                     name="password2"
                     type="password"
                   ></v-text-field>
+                    </v-form>
+                  <br>
+                    <div class="error" v-html="error" />
+                  <br>
 
-                   <v-btn color="#4CAF50">Sign Up</v-btn>
-                </v-form>
+                   <v-btn 
+                   @click="register"
+                   color="#4CAF50">Sign Up</v-btn>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -63,7 +68,7 @@
   </div>
 </template>
 <script>
-import AuthService from '@/services/UsersService'
+import UsersService from '@/services/UsersService'
 export default {
   data () {
     return {
@@ -75,12 +80,17 @@ export default {
         error: null
     }
   },
-  async register() {
-     try{
-        const response = await UsersService.register({
-            email: this.email,
-            password: this.password
+  methods: {
+    async register() {
+      try{
+            const response = await UsersService.register({
+              email: this.email,
+              username: this.username,
+              firstname: this.firstname,
+              lastname: this.lastname,
+              password: this.password
         })
+        console.log(response)
         // this.$store.dispatch('setToken', response.data.token)
         // this.$store.dispatch('setUser', response.data.user)
      } catch (error){
@@ -88,6 +98,7 @@ export default {
      }    
         console.log('register button has been clicked', this.email, this.password)
     }
+  }
   }
 </script>
 

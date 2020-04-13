@@ -18,7 +18,7 @@ function jwtSignUser(user) {
 module.exports = {
     async register(req, res, next) {
         try {
-            const user = new User({
+            const user = await User.create({
                 _id: mongoose.Types.ObjectId(),
                 email: req.body.email,
                 username: req.body.username,
@@ -28,7 +28,7 @@ module.exports = {
                 admin: null,
                 premium: null,
             })
-            user.save()
+            // user.save()
             userJson = user.toJSON()
             res.send({
                 user: userJson,
