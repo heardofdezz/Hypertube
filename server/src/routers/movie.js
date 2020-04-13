@@ -20,38 +20,55 @@ const OpenSubtitles = new OS({
 });
 const Movie = require('../models/Movie');
 
-router.get('/get-categories', async(req, res) => {
+router.get('/categories', async(req, res) => {
     try {
-        await request('https://api.themoviedb.org/3/genre/movie/list?api_key=3ff5d54ee9e6ea8b52468f12f9f2e785&language=fr-FR', (err, response) => {
-            res.send(JSON.parse(response.body).genres);
+        const categoriesArrays = await Movie.find({}, 'genres');
+        if (!categoriesArrays) {
+            res.send('error');
+        }
+        let categories = [];
+        categoriesArrays.forEach((categoriesArray) => {
+            categoriesArray.genres.forEach((category) => {
+                category = category.toLowerCase();
+                if (!categories.includes(category) && category !== 'n/a') {
+                    categories.push(category);
+                }
+            });
         });
+        res.send(categories);
     } catch(e){
         res.send('error');
     }
 });
 
-router.get('/get-movies-by-category/:id', async(req, res) => {
+router.get('/get-movies-by-category/:category', async(req, res) => {
     try {
-        let page = req.body ? req.query.page : 1;
-        page = page ? page : 1;
-        await request(`https://api.themoviedb.org/3/discover/movie?api_key=3ff5d54ee9e6ea8b52468f12f9f2e785&language=fr-FR&sort_by=popularity.desc&page=${page}&with_genres=${req.params.id}`, (err, response) => {
-            res.send(JSON.parse(response.body));
+        const pattern = '^' + req.params.category + '$';
+        const movies = await Movie.find({genres: {$all: [new RegExp(pattern, 'i')]}});
+        let results = movies.map((movie) => movie.toObject());
+        results.forEach((result) => {
+            delete result.torrent;
+            delete result.magnet
         });
+        res.send(results);
     } catch(e){
         res.send('error');
     }
 });
 
-router.get("/movie/:title", async(req, res) => {
+router.get('/movie-infos/:id', async(req, res) => {
     try {
-        req.params.title = req.params.title.replace(/_/g, " ");
-        await request(`https://tpb.party/search/${req.params.title}`, (err, response, body) => {
-            const html = parser.parseFromString(body, "text/xml");
-            const a = html.getElementsByTagName("a").map((elem) => elem.getAttribute("href")).filter((href) => (href && href.match(/^magnet/)));
-            res.send(a);
-        });
-    } catch (e) {
-        res.send("error");
+        const movie = await Movie.findById(req.params.id);
+        if (!movie) {
+            res.send('Movie not found');
+        } else {
+            const result = movie.toObject();
+            delete result.torrent;
+            delete result.magnet
+            res.send(result);
+        }
+    } catch(e) {
+        res.send('error');
     }
 });
 

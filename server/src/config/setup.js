@@ -36,7 +36,7 @@ const getImdbData = async (movie) => {
 }
 
 const saveEztv = async (data) => {
-    const imdb_code = data.imdb_id;
+    const imdb_code = 'tt' + data.imdb_id;
     const magnet = data.magnet_url;
 
     if (!imdb_code || !magnet) {
@@ -50,7 +50,7 @@ const saveEztv = async (data) => {
     try {
         await getImdbData(movie);
     } catch (e) {
-        console.error('YTS Error: ', e);
+        console.error('EZTV Error: ', e);
     }
 }
 
@@ -112,7 +112,7 @@ const downloadMovieData = async(page, provider) => {
 
 const importMovies = async() => {
     try {
-        const providers = [ 'yts', 'eztv' ];
+        const providers = [ /*'yts', 'eztv'*/ ];
 
         await asyncForEach(providers, async(provider) => {
             await downloadMovieData(1, provider).then(() => {
