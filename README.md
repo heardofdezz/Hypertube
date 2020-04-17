@@ -1,5 +1,7 @@
 # Hypertube
 
+# For HYPERTUBE API DOC OPEN ./doc.html file
+
 #CLIENT SIDE
 cd->client :
 
@@ -17,4 +19,3 @@ npm install
 
 # server with hot reload at localhost:8081
 npm start
-
