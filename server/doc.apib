@@ -1,0 +1,67 @@
+FORMAT: 1A
+HOST: http://localhost:8081
+
+# Hypertube 42
+
+Documentation of hypertube's API.
+
+# Data Structures
+
+## ProviderList(enum)
++ `yts`
++ `eztv`
+
+## MovieData
++ _id: 5e9350b39991040ec52bf698 (required, string) - Unique identifier
++ provider: yts (required, ProviderList) - Name of the provider
++ title: I Saw the Devil (required, string) - Title
++ director: Jee-woon Kim (string) - Director
++ writer: `ee-woon Kim (adaptation), Hoon-jung Park (screenplay)` (required, string) - Writer
++ year: 2010 (required, number) - Year when movie published
++ rating: 7.8 (required, number) - Rating
++ actors: `Byung-hun Lee, Min-sik Choi, Gook-hwan Jeon, Joon-hyuk Lee` (string) - Actors' list
++ country: South Korea (required, string) - Country of the movie
++ summary: `ang Kyung-chul (Choi Min-sik) is a dangerous psychopath serial killer. He has committed infernal serial murders in diabolic ways that one cannot even imagine and his victims range from young women to even children. The police have chased him for a long time, but were unable to catch him. One day, Joo-yeon, daughter of a retired police chief becomes his prey and is found dead in a horrific state. Her fiancé Soo-hyun (Lee Byung-hun), a top secret agent, decides to track down the murderer himself. He promises himself that he will do everything in his power to take bloody vengeance against the killer, even if it means that he must become a monster himself to get this monstrous and inhumane killer.` (required, string) - Summary
++ cover: https://m.media-amazon.com/images/M/MV5BZjRmNjc5MTYtYjc3My00ZjNiLTg4YjUtMTQ0ZTFkZmMxMDUzXkEyXkFqcGdeQXVyNDY5MTUyNjU@._V1_SX300.jpg
++ runtime: 144 min (required, string) - Duration of the movie
++ genres: action, drama (required, array) - array of genres of the movie
++ isDownloaded: false (required, boolean, default) - If the movie is downloaded or not
+
+#Group Movie
+
+## Get categories [/categories]
+
+### Get categories [GET]
+Get list of available categories
+
++ Response 200 (application/json)
+
+        ["action", "crime", "drama", "..."]
+
+## Get movies by category [/get-movies-by-category/{category}{?limit}{?page}]
+
++ parameters
+
+    + category: action (required, string) - Name of the category
+    + limit: 20 (optional, number) - Number of movies by page
+    + page: 3 (optional, number) - Page's number
+
+### Get movies by category [GET]
+Get all movies available matching with the category.
+
++ Response 200 (application/json)
+
+    + Attributes(array[MovieData], fixed-type)
+
+## Get information of a movie [/movie-infos/{id}]
+
++ parameters
+
+    + id: 5e9350b39991040ec52bf698 (required, string) - Movie's ID
+
+### Get information of a movie [GET]
+Get information of a movie
+
++ Response 200 (application/json)
+
+    + Attributes(MovieData)
