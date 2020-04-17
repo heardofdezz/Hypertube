@@ -6,6 +6,8 @@ const saltRounds = 10
 
 
 mongoose.set('useCreateIndex', true);
+
+
 const userSchema = mongoose.Schema({ 
     _id: mongoose.Types.ObjectId,
     email: { type: String, index: true, unique: true },
@@ -15,14 +17,16 @@ const userSchema = mongoose.Schema({
     password: String,
     admin: Boolean,
     premium: Boolean,
+    created: { type: Date, default: Date.now },
 });
-// Hashing password before saving into database
 userSchema.set('validateBeforeSave', false);
-// userSchema.path('email').validate(function (value) {
-//     return v != null;
-// });
+
+// Hashing password before saving into database
 userSchema.pre('save', function(next){
     this.password = bcrypt.hashSync(this.password, saltRounds);
     next();
-})
+});
+
+
+
 module.exports = mongoose.model('User', userSchema);
