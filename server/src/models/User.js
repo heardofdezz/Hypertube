@@ -17,6 +17,10 @@ const userSchema = mongoose.Schema({
     premium: Boolean,
 });
 // Hashing password before saving into database
+userSchema.set('validateBeforeSave', false);
+// userSchema.path('email').validate(function (value) {
+//     return v != null;
+// });
 userSchema.pre('save', function(next){
     this.password = bcrypt.hashSync(this.password, saltRounds);
     next();

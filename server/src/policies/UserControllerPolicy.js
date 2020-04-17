@@ -2,17 +2,18 @@
 const Joi = require('joi')
 
 module.exports = {
-    register (req, res, next){
-        const schema = {
-            email: Joi.string().email().required(),
-            username: Joi.string().required(),
-            lastname: Joi.string(),
-            firstname: Joi.string(),
-            password: Joi.string().required().regex(
+    async register (req, res, next){
+        console.log(req.body)
+        const schema = Joi.object().keys({
+            email: Joi.types.String().email().required(),
+            username: Joi.String().required(),
+            lastname: Joi.String(),
+            firstname: Joi.String(),
+            password: Joi.String().required().regex(
                 new RegExp('^[a-zA-Z0-9]{6,32}$')
             )
-        }
-        const{error, value } = Joi.validate(req.body, schema)
+        })
+        const{error, value } = await Joi.validate(req.body, schema)
         if(error){
             switch (error.details[0].context.key) {
                 case 'email':
