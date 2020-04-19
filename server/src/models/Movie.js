@@ -54,10 +54,16 @@ const movieSchema = new mongoose.Schema({
         trim: true
     },
     torrent: [],
-    magnet: {
-        type: String,
-        trim: true
-    },
+    magnet: [
+        {
+            magnet: {
+                type: String
+            },
+            seeds: {
+                type: Number
+            }
+        }
+    ],
     filePath: {
         type: String,
         trim: true

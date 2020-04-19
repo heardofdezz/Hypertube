@@ -11,6 +11,10 @@ Documentation of hypertube's API.
 + `yts`
 + `eztv`
 
+## SortList(enum)
++ `year`
++ `rating`
+
 ## MovieData
 + _id: 5e9350b39991040ec52bf698 (required, string) - Unique identifier
 + provider: yts (required, ProviderList) - Name of the provider
@@ -38,21 +42,6 @@ Get list of available categories
 
         ["action", "crime", "drama", "..."]
 
-## Get movies by category [/get-movies-by-category/{category}{?limit}{?page}]
-
-+ parameters
-
-    + category: action (required, string) - Name of the category
-    + limit: 20 (optional, number) - Number of movies by page
-    + page: 3 (optional, number) - Page's number
-
-### Get movies by category [GET]
-Get all movies available matching with the category.
-
-+ Response 200 (application/json)
-
-    + Attributes(array[MovieData], fixed-type)
-
 ## Get information of a movie [/movie-infos/{id}]
 
 + parameters
@@ -65,3 +54,32 @@ Get information of a movie
 + Response 200 (application/json)
 
     + Attributes(MovieData)
+    
+## Search movies [/search{?query}{?category}{?limit}{?page}{?provider}{?sort}]
+
+### Search movies [GET]
+Get all movies with specific filters or not
+
++ parameters
+
+    + query: I saw the Devil (optional, string) - Search query
+    + category: action (optional, string) - Name of the category
+    + limit: 20 (optional, number) - Number of movies by page
+    + page: 3 (optional, number) - Page's number (Starts at 1)
+    + provider: yts (optional, ProviderList) - Name of the provider
+    + sort: year (optional, SortList) - The sort option
+
++ Response 200 (application/json)
+
+    + Attributes(array[MovieData], fixed-type)
+
+## View a movie [/view-movie/{id}]
+
++ parameters
+
+    + id: 5e9350b39991040ec52bf698 (required, string) - Movie's ID
+
+### View a movie [GET]
+The url to put in the source of the video Tag
+
++ Response 200
