@@ -26,8 +26,9 @@ const getImdbData = async (movie) => {
 
         return movie;
     })
-        .then((movie) => {
-            movie.save();
+        .then(async (movie) => {
+            await movie.save();
+            console.log('\x1b[32m', movie.provider.toUpperCase(), ': Movie added!' ,'\x1b[0m');
             return Promise.resolve();
         })
         .catch((e) => {
@@ -36,21 +37,42 @@ const getImdbData = async (movie) => {
 }
 
 const saveEztv = async (data) => {
-    const imdb_code = data.imdb_id;
-    const magnet = data.magnet_url;
-
-    if (!imdb_code || !magnet) {
-        return;
-    }
-    const movie = new Movie ({
-        provider: 'eztv',
-        imdb_code,
-        magnet
-    });
     try {
-        await getImdbData(movie);
+        const imdb_code = 'tt' + data.imdb_id;
+        const magnet = data.magnet_url;
+        const seeds = data.seeds ? data.seeds: 0;
+
+        if (!imdb_code || !magnet) {
+            return;
+        }
+        const findMovie = await Movie.findOne({provider: 'eztv', imdb_code: imdb_code});
+        if (!!findMovie) {
+            if (findMovie.magnet.every((elem) => elem.magnet !== magnet)) {
+                findMovie.magnet.push({
+                    magnet,
+                    seeds
+                });
+                await findMovie.save();
+                console.log('\x1b[32m', 'EZTV: Magnet successfully added to the movie ', findMovie.title , '\x1b[0m')
+            } else {
+                console.log('\x1b[34m', 'EZTV: Movie already added.' , '\x1b[0m');
+            }
+        } else {
+            const movie = new Movie ({
+                provider: 'eztv',
+                imdb_code,
+                magnet: [{
+                    magnet,
+                    seeds
+                }]
+            });
+            await getImdbData(movie);
+        }
     } catch (e) {
-        console.error('YTS Error: ', e);
+        if (e.statusCode && e.statusCode === 401) {
+            return Promise.reject('Free IMDB API quota limit reached');
+        }
+        console.error('\x1b[31m', 'EZTV Error: ', e, '\x1b[0m');
     }
 }
 
@@ -59,23 +81,32 @@ const saveYts = async (data) => {
     if (!data.torrents) {
         return;
     }
-    const movie = new Movie({
-        provider: 'yts',
-        imdb_code: data.imdb_code,
-        title: data.title,
-        torrent: data.torrents
-    });
-    try {
-        await getImdbData(movie);
-    } catch (e) {
-        console.error('YTS Error: ', e);
+    const findMovie = await Movie.findOne({provider: 'yts', imdb_code: data.imdb_code});
+    if (!findMovie) {
+        const movie = new Movie({
+            provider: 'yts',
+            imdb_code: data.imdb_code,
+            title: data.title,
+            torrent: data.torrents
+        });
+        try {
+            await getImdbData(movie);
+        } catch (e) {
+            if (e.statusCode && e.statusCode === 401) {
+                return Promise.reject('Free IMDB API quota limit reached');
+            }
+            console.error('\x1b[31m', 'YTS Error: ', e, '\x1b[0m');
+        }
+    } else {
+        console.log('\x1b[34m', 'YTS: Movie already added.' , '\x1b[0m')
     }
 }
 
 const downloadMovieData = async(page, provider) => {
-    const url = provider === 'yts' ? 'https://yts.ag/api/v2/list_movies.json?limit=100&page=' : 'https://eztv.ag/api/get-torrents?limit=100&page=';
+    const url = provider === 'yts' ? 'https://ytss.unblocked.is/api/v2/list_movies.json?limit=100&page=' : 'https://eztv1.unblocked.is/api/get-torrents?limit=100&page=';
 
-    await request(url + page, async (err, res, body) => {
+    return request(url + page, async (err, res, body) => {
+        try  {
         if (err || !res) {
             console.error(err ? err : 'No results in page ' + page);
         } else if (res.statusCode !== 200) {
@@ -94,19 +125,34 @@ const downloadMovieData = async(page, provider) => {
                     return Promise.resolve();
                 }
 
-                movies.forEach((movie) => {
-                    if (provider === 'yts') {
-                        saveYts(movie);
-                    } else {
-                        saveEztv(movie);
-                    }
-                })
+                try {
+                    await asyncForEach(movies, async(movie) => {
+                        try {
+                            if (provider === 'yts') {
+                                await saveYts(movie);
+                            } else {
+                                await saveEztv(movie);
+                            }
+                        } catch(e) {
+                            return Promise.reject(e);
+                        }
+                    });
+                } catch (e) {
+                    throw new Error(e);
+                }
+
             } catch (e) {
-                return Promise.reject(e);
+                throw new Error(e);
             }
         }
-        await downloadMovieData(page + 1, provider);
-        return Promise.resolve();
+        try {
+            await downloadMovieData(page + 1, provider);
+        } catch(e) {
+            throw new Error(e);
+        }
+        } catch (e) {
+            console.error('\x1b[31m', 'An error occured in provider ' + provider + ' :\n' + e, '\x1b[0m')
+        }
     });
 }
 
@@ -114,13 +160,14 @@ const importMovies = async() => {
     try {
         const providers = [ 'yts', 'eztv' ];
 
-        await asyncForEach(providers, async(provider) => {
-            await downloadMovieData(1, provider).then(() => {
-                console.log(provider + ' successfully set up !');
+        providers.forEach((provider) => {
+            downloadMovieData(1, provider).then(() => {
+                console.log('\x1b[32m', provider + ' successfully set up !', '\x1b[0m');
             }).catch((e) => {
-                    console.error('An error occured in provider ' + provider + ' :\n' + e);
+                console.error('\x1b[31m', 'An error occured in provider ' + provider + ' :\n' + e, '\x1b[0m');
             });
         });
+        /*Movie.deleteMany({provider: 'eztv'}).then(() => console.log('ok')).catch((e) => console.log(e));*/
     } catch(e) {
         console.log(e);
     }
