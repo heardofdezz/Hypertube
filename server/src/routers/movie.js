@@ -41,24 +41,6 @@ router.get('/categories', async(req, res) => {
     }
 });
 
-router.get('/get-movies-by-category/:category', async(req, res) => {
-    try {
-        const pattern = '^' + req.params.category + '$';
-
-        const limit = req.query ? req.query.limit : undefined;
-        const skip = req.query ? req.query.page : undefined;
-        const movies = await Movie.find({genres: {$all: [new RegExp(pattern, 'i')]}}).limit(Number(limit)).skip(Number(skip));
-        let results = movies.map((movie) => movie.toObject());
-        results.forEach((result) => {
-            delete result.torrent;
-            delete result.magnet
-        });
-        res.send(results);
-    } catch(e){
-        res.send('error');
-    }
-});
-
 router.get('/movie-infos/:id', async(req, res) => {
     try {
         const movie = await Movie.findById(req.params.id);
@@ -75,21 +57,82 @@ router.get('/movie-infos/:id', async(req, res) => {
     }
 });
 
-router.get("/view-movie/:magnet", async(req, res) => {
-    const magnet = "magnet:?" + req.params.magnet;
+router.get('/search', async(req, res) => {
+    try {
+        const query = req.query ? req.query.query : undefined;
+        const limit = req.query ? req.query.limit : undefined;
+        const skip = req.query ? req.query.page : undefined;
+        const provider = req.query ? req.query.provider : undefined;
+        const category = req.query && req.query.category && req.query.category.length > 0 ? '^' + req.query.category + '$' : undefined;
+        let sort = {};
+        if (req.query && req.query.sort) {
+            if (req.query.sort.match(/^year$/i)) {
+                sort = {year: -1};
+            } else if (req.query.sort.match(/^rating$/i)) {
+                sort = {rating: -1};
+            }
+        }
 
-    const movie = Movie.findOne({magnet});
-    if (movie && movie.isDownloaded) {
-        movie.views++;
-        await movie.save();
+        let filters = query && query.length > 0 ? {title: { $regex: query, $options: 'i'}} : {};
+        filters = provider && (provider === 'yts' || provider === 'eztv') ? {...filters, provider} : filters;
+        filters = category ? {...filters, genres: {$all: [new RegExp(category, 'i')]}} : filters;
+        const movies = await Movie.find(filters, [], {
+            skip: Number(skip) - 1,
+            limit: Number(limit),
+            sort
+        });
+
+        let results = movies.map((movie) => movie.toObject());
+
+        results.forEach((result) => {
+            delete result.torrent;
+            delete result.magnet;
+        });
+        res.send(results);
+    } catch(e) {
+        res.send('error');
+    }
+})
+
+router.get("/view-movie/:id", async(req, res) => {
+    const id = req.params.id;
+
+    const movie = await Movie.findById(id);
+    if (!movie) {
+        return res.send('Movie not found');
+    }
+    if (movie.isDownloaded) {
         showMovie(req, res, true, fs.statSync(movie.filePath)['size'], mime.getType(movie.filePath), movie.filePath);
     } else {
-        const title = req.query ? req.query.title : undefined;
-        if (!title) {
-            return res.send({error: 'Please provide the title'});
+        let magnet;
+        if (movie.provider === 'yts') {
+            if (movie.torrent.length === 0) {
+                return res.send('No torrent link');
+            } else {
+                magnet = 'magnet:?xt=urn:btih:' + movie.torrent[0].hash;
+                let seeds = movie.torrent[0].seeds;
+                movie.torrent.forEach((torrent) => {
+                    if (torrent.seeds > seeds) {
+                        seeds = torrent.seeds;
+                        magnet = 'magnet:?xt=urn:btih:' + torrent.hash;
+                    }
+                });
+            }
+        } else if (movie.provider === 'eztv') {
+            if (movie.magnet.length === 0) {
+                return res.send('No torrent link');
+            } else {
+                magnet = movie.magnet[0].magnet;
+                let seeds = movie.magnet[0].seeds;
+                movie.magnet.forEach((element) => {
+                    if (element.seeds > seeds) {
+                        magnet = element.magnet;
+                        seeds = element.seeds
+                    }
+                });
+            }
         }
         const engine = torrentStream(magnet, {path: path.join(__dirname, 'movies')});
-        let movie;
 
         engine.on('ready', () => {
             engine.files.forEach(async (file) => {
@@ -102,11 +145,7 @@ router.get("/view-movie/:magnet", async(req, res) => {
                     return;
                 }
                 file.select();
-                movie = new Movie({
-                    title,
-                    filePath: file.path,
-                    magnet
-                });
+                movie.filePath = file.path;
                 await movie.save();
                 showMovie(req, res, false, file.length, mime.getType(file.name), file);
             });
