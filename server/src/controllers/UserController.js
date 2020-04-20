@@ -6,6 +6,10 @@ const bcrypt = require('bcrypt')
 // User model
 const mongoose = require('mongoose')
 const User = require('../models/User');
+/// Email verification token
+const sendEmail = require('gmail-send')({user: config.email.user ,pass: config.email.password});
+var randomString = require("randomstring");
+
 
 function jwtSignUser(user) {
     const ONE_WEEK = 60 * 60 * 24 * 7
@@ -27,14 +31,21 @@ module.exports = {
                 password: req.body.password,
                 admin: null,
                 premium: null,
+                verify: null,
+                verify_token: randomString(20)
             })
-            // user.save()
+           sendEmail({
+                to:     user.email,
+                from:   'Hypertube Stream',
+                subject: 'Account Activation',
+                html: '<h1>Click to Activate your account!</h1><p><a href="http://localhost:8081/verify/'
+                +user.verify_token+ '">click here !</a></p>',
+           })
             userJson = user.toJSON()
             res.send({
                 user: userJson,
                 token: jwtSignUser(userJson)
             })
-           
         } catch(err) {
             console.log(err)
             res.status(400).send({
@@ -45,18 +56,15 @@ module.exports = {
     async login (req, res, next) {
         try {
             const {email, password} = req.body
-            const user = await User.findOne({
-                where: {
-                    email: email
-                }
-            })
+            const user = await User.findOne({email: req.body.email})
             console.log(user)
             if(!user){
                 res.status(403).send({
                     error: 'Wrong login information'
                 })
             }
-            if(bcrypt.compareSync(req.body.password, userInfo)){
+             console.log(user)
+            if(bcrypt.compareSync(req.body.password, user.password)){
               const userJson = user.toJSON()
               res.send({
                   user: userJson,
@@ -73,7 +81,11 @@ module.exports = {
                 error: 'An error has occured tying to login'
             })
         }
+    },
+    async verify(req, res, nex){
+
     }
+
 }
 
 
