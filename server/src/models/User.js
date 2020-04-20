@@ -17,6 +17,8 @@ const userSchema = mongoose.Schema({
     password: String,
     admin: Boolean,
     premium: Boolean,
+    verify_token: String,
+    verify: Boolean,
     created: { type: Date, default: Date.now },
 });
 userSchema.set('validateBeforeSave', false);

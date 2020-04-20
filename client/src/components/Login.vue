@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <!-- <h1>{{ msg }}</h1> -->
     <v-layout align-center justify-center >
       <div></div>
           <v-flex xs12 sm8 md4>
@@ -36,7 +35,7 @@
                 <v-spacer></v-spacer>
                 <v-btn  color="#4CAF50"
                 :to="{
-                        name: 'Sign Up'
+                        name: 'Register'
                       }">Sign Up</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn color="red darken-2">Gmail</v-btn>
