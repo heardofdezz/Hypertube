@@ -6,14 +6,14 @@
             <v-card class="elevation-12" dark color="rgb(50, 0, 0, 0.7)">
               <v-toolbar color="transparent" flat>
                 <v-spacer></v-spacer>
-                <v-toolbar-title>LOGIN</v-toolbar-title>
+                <v-toolbar-title>LOGIN !  </v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
               <v-card-text>
                 <v-form name="signup-form" autocomplete="off">
                   <v-text-field 
                   v-model="email"
-                    label="Email"
+                    label="Em@il"
                     name="Email"
                     type="text"
                   ></v-text-field>
@@ -25,7 +25,7 @@
                     name="password"
                     type="password"
                   ></v-text-field>
-                   <v-btn color="grey darken-2">Login</v-btn>
+                   <v-btn @click="login" color="grey darken-2">Login</v-btn>
                 </v-form>
                 <div class="error" v-html="error" />
                 <p><a href="">Forgot Password?</a></p>
@@ -47,8 +47,8 @@
 </template>
 
 <script>
+import UsersService  from '@/services/UsersService';
 export default {
-  name: 'Login',
   data () {
     return {
       email: '',
@@ -59,10 +59,19 @@ export default {
   methods: {
     async login() {
       try {
-
+        const response = await UsersService.login({
+          email: this.email,
+          password: this.password
+        })
+        this.$store.dispatch('setUser', response.data.user)
+        this.$store.dispatch('setToken', response.data.token).then(() => {
+          this.router.push('/movies')
+        })
       } catch (error){
-
+        this.error = error.response.data.error
       }
+  console.log('login button has been clicked', this.email, this.password)
+
     }
   }
 }
@@ -77,7 +86,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-font-family: 'Kameron', serif;
+font-family: 'Bangers', cursive;
 padding-top: 90px;
   background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
     background-size: cover;
