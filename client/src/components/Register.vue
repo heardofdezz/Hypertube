@@ -13,7 +13,7 @@
                 <v-form name="signup-form" autocomplete="off">
                   <v-text-field
                   v-model="email"
-                    label="Email"
+                    label="Em@il"
                     name="email"
                     type="text"
                   ></v-text-field>
@@ -46,13 +46,7 @@
                     name="password"
                     type="password"
                   ></v-text-field>
-                  
-                  <v-text-field
-                    id="password2"
-                    label="Type Your Password Again"
-                    name="password2"
-                    type="password"
-                  ></v-text-field>
+
                     </v-form>
                   <br>
                     <div class="error" v-html="error" />
@@ -90,7 +84,7 @@ export default {
               lastname: this.lastname,
               password: this.password
         })
-        console.log(response)
+        
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
      } catch (error){
@@ -113,7 +107,7 @@ export default {
     top: 0;
     left: 0;
     padding-top: 90px;
-font-family: 'Kameron', serif;
+font-family: 'Bangers', cursive;
   background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
     background-size: cover;
     /* background-color: red; */
