@@ -10,5 +10,9 @@ module.exports = {
     //Token auth using jsonwebtoken
     authentification: {
         jwtSecret: process.env.JWT_SECRET || 'secret'
+    },
+    email: {
+        user: '',
+        password: ''
     }
 }

@@ -2,22 +2,22 @@
 const Joi = require('joi')
 
 module.exports = {
-    register (req, res, next){
+     register (req, res, next){
         const schema = {
-            email: Joi.string().email().required(),
+            email: Joi.string().email({ minDomainAtoms: 2 }).required(),
             username: Joi.string().required(),
-            lastname: Joi.string(),
-            firstname: Joi.string(),
-            password: Joi.string().required().regex(
-                new RegExp('^[a-zA-Z0-9]{6,32}$')
-            )
+            lastname: Joi.string().required(),
+            firstname: Joi.string().required(),
+            password: Joi.string().required().regex(new RegExp('^[a-zA-Z0-9]{6,32}$')),
+            created: Joi.date(),
         }
-        const{error, value } = Joi.validate(req.body, schema)
+        const{error, value } =  Joi.validate(req.body, schema)        
         if(error){
+            console.log(error)
             switch (error.details[0].context.key) {
                 case 'email':
                     res.status(400).send({
-                        error:'Email isnt valid'
+                        error:"Email isn't valid"
                     })
                     break
                 case 'password':
