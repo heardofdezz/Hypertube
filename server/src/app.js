@@ -7,6 +7,7 @@ const  Config = require('./config/Config')
 const app = express();
 const importMovies = require('./config/setup');
 const movieRouter = require('./routers/movie');
+const commentRouter = require('./routers/comment');
 
 app.use(morgan('combined'));
 app.use(bodyParser.json());
@@ -24,8 +25,9 @@ Config.db.password +
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then((serverlaunch) => {
-    importMovies();
+    //importMovies();
     app.use(movieRouter);
+    app.use(commentRouter);
     app.listen(Config.port, () =>  {
         console.log(`listening server side on ${Config.port} Connected to Mongo/Mongoose Database`)
     })
