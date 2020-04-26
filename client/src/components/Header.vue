@@ -1,23 +1,29 @@
 <template>
    <v-app-bar dark flat color="red darken-3">
-    
+     <v-toolbar
+      color="primary"
+      flat
+    >
       <v-switch
         v-model="$vuetify.theme.dark"
         hide-details
-        inset
-        label="Dark Mode"
+        onset
+        label="Night Mode"
+       
       ></v-switch>
+       </v-toolbar>
         <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
         <v-spacer></v-spacer>
         <v-toolbar-title class="title" color="red darken-3">
           HYPERTUBE
         </v-toolbar-title>
-        
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
         <v-spacer></v-spacer>
         
         <v-toolbar-items>
-          <v-btn v-if="$store.state.isUserLoggedIn"  icon>
-            <v-icon>mdi-heart</v-icon>
+          <v-btn v-if="$store.state.isUserLoggedIn" icon>
+            <v-icon >mdi-heart</v-icon>
           </v-btn>
         </v-toolbar-items>
 
@@ -30,13 +36,13 @@
           left
           bottom
         >
-          <template v-slot:activator="{ on }">
-            <v-btn   icon v-on="on">
-              <v-icon>mdi-dots-vertical</v-icon>
+          <template   v-slot:activator="{ on }">
+            <v-btn icon v-on="on" >
+              <v-icon >mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
   
-          <v-list >
+          <v-list v-if="$store.state.isUserLoggedIn" >
             <v-list-item>
               <v-list-item-title>Settings</v-list-item-title>
               </v-list-item>
@@ -44,7 +50,7 @@
               <v-list-item-title>Profile</v-list-item-title>
               </v-list-item>
               <v-list-item>
-              <v-btn dark @click="logout()">Logout</v-btn>
+              <v-btn dark @click="logout">Logout</v-btn>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -72,12 +78,14 @@ export default {
       if (!this.$vuetify) return
       this.$vuetify.theme.dark = this.initialDark
     },
-  logout(){
-      this.$store.dispatch('setToken', null),
-      this.$store.dispatch('setUser', null)
-      this.$router.push({
-        name: 'Hypertube'
-      })
+    methods: {
+      logout(){
+        this.$store.dispatch('setToken', null),
+        this.$store.dispatch('setUser', null),
+        this.$router.push({
+          name: 'Hypertube'
+        })
+      }
     }
 }
 

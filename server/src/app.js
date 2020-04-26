@@ -25,7 +25,7 @@ Config.db.password +
     useUnifiedTopology: true
 }).then((serverlaunch) => {
     importMovies();
-    app.use(movieRouter);
+    // app.use(movieRouter);
     app.listen(Config.port, () =>  {
         console.log(`listening server side on ${Config.port} Connected to Mongo/Mongoose Database`)
     })

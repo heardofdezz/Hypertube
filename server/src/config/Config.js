@@ -12,7 +12,7 @@ module.exports = {
         jwtSecret: process.env.JWT_SECRET || 'secret'
     },
     email: {
-        user: 'louamax ',
-        password: 'lastmen00'
+        user: '',
+        password: ''
     }
 }

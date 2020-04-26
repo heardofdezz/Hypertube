@@ -32,7 +32,7 @@ module.exports = {
                 admin: null,
                 premium: null,
                 verify: null,
-                verify_token: randomString(20)
+                // verify_token: randomString(20)
             })
            sendEmail({
                 to:     user.email,

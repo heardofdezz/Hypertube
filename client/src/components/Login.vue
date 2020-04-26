@@ -64,8 +64,9 @@ export default {
           password: this.password
         })
         this.$store.dispatch('setUser', response.data.user)
-        this.$store.dispatch('setToken', response.data.token).then(() => {
-          this.router.push('/movies')
+        this.$store.dispatch('setToken', response.data.token).then((result) => {
+          console.log(result)
+          this.$router.push({name: 'Movies'})
         })
       } catch (error){
         this.error = error.response.data.error
@@ -88,8 +89,8 @@ export default {
     left: 0;
 font-family: 'Bangers', cursive;
 padding-top: 90px;
-  background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
-    background-size: cover;
+  /* background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
+    background-size: cover; */
     /* background-color: red; */
     transform: scale(1.0);
 }
