@@ -1,5 +1,18 @@
 const mongoose = require('mongoose');
 
+const commentSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    content: {
+        type: String,
+        trim: true
+    }
+}, {
+    timestamps: true
+});
+
 const movieSchema = new mongoose.Schema({
     provider: {
         type: String,
@@ -80,7 +93,8 @@ const movieSchema = new mongoose.Schema({
     isDownloaded: {
         type: Boolean,
         default: false
-    }
+    },
+    comments: [commentSchema]
 });
 
 const Movie = mongoose.model('Movie', movieSchema);

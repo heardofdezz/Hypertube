@@ -1,29 +1,26 @@
-// const express = require('express');
-// const router = new express.Router();
-// const request = require('request');
-// const DomParser = require('dom-parser');
-// const parser = new DomParser();
-// const torrentStream = require('torrent-stream');
-// const mime = require('mime');
-// const pump = require('pump');
-// const path = require('path');
-// const { showMovie } = require('../functions/movie');
-// const fs = require('fs');
-// const srt2vtt = require('srt-to-vtt');
-// const download = require('download');
-// const OS = require('opensubtitles-api');
-// const OpenSubtitles = new OS({
-//     useragent: 'TemporaryUserAgent',
-//     username: 'laubert42',
-//     password: 'hypertube42',
-//     ssl: true
-// });
-// const Movie = require('../models/Movie');
 
-// router.get('/categories', async(req, res) => {
-//     try {
-//         const categoriesArrays = await Movie.find({}, 'genres');
-//         if (!categoriesArrays) {
+const express = require('express');
+const router = new express.Router();
+const torrentStream = require('torrent-stream');
+const mime = require('mime');
+const path = require('path');
+const { showMovie } = require('../functions/movie');
+const fs = require('fs');
+const srt2vtt = require('srt-to-vtt');
+const download = require('download');
+const OS = require('opensubtitles-api');
+const OpenSubtitles = new OS({
+    useragent: 'TemporaryUserAgent',
+    username: 'laubert42',
+    password: 'hypertube42',
+    ssl: true
+});
+const Movie = require('../models/Movie');
+
+ router.get('/categories', async(req, res) => {
+     try {
+         const categoriesArrays = await Movie.find({}, 'genres');
+         if (!categoriesArrays) {
 //             res.send('error');
 //         }
 //         let categories = [];
@@ -163,6 +160,68 @@
 //     }
 // });
 
+router.get('/subtitles/:id', async(req, res) => {
+    try {
+        const movie = await Movie.findById(req.params.id);
 
+        OpenSubtitles.search({
+            sublanguageid: [ 'fre', 'eng' ].join(),
+            extensions: 'srt',
+            limit: 'all',
+            imdbid: movie.imdb_code
+        })
+            .then((subtitles) => {
+                let subtitlesPath = path.join(__dirname, 'subtitles');
+                let result = {
+                    'en': undefined,
+                    'fr': undefined
+                };
 
-// module.exports = router;
+                if (subtitles.en && subtitles.en[0]) {
+                    download(subtitles.en[0].url, subtitlesPath)
+                        .then(() => {
+                            fs.stat(subtitlesPath + '/' + subtitles.en[0].filename, (err) => {
+                                if (err === null) {
+                                    result.en = '/' + path.basename(subtitles.en[0].filename, '.srt') + '.vtt';
+                                    fs.createReadStream(subtitlesPath + '/' + subtitles.en[0].filename).pipe(srt2vtt()).pipe(fs.createWriteStream(subtitlesPath + result.en));
+                                }
+
+                                if (subtitles.fr && subtitles.fr[0].url) {
+                                    download(subtitles.fr[0].url, subtitlesPath)
+                                        .then(() => {
+                                            fs.stat(subtitlesPath + '/' + subtitles.fr[0].filename, (err) => {
+                                                if (err === null) {
+                                                    result.fr = '/' + path.basename(subtitles.fr[0].filename, '.srt') + '.vtt';
+                                                    fs.createReadStream(subtitlesPath + '/' + subtitles.fr[0].filename).pipe(srt2vtt()).pipe(fs.createWriteStream(subtitlesPath + result.fr));
+                                                }
+                                                res.send(result);
+                                            });
+                                        })
+                                        .catch((err) => {
+                                            console.error(err);
+                                            res.send(result);
+                                        });
+                                } else {
+                                    res.send(result);
+                                }
+                            });
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                            res.send('error');
+                        });
+                } else {
+                    res.send('error');
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                res.send('error');
+            });
+    } catch (e) {
+        console.error(e);
+        res.send('error');
+    }
+});
+
+module.exports = router;
