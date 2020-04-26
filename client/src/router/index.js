@@ -4,6 +4,8 @@ import Index from '@/components/Index'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
 import Movies from '@/components/Movies'
+import Settings from '@/components/Settings'
+import Profile from '@/components/Profile'
 Vue.use(Router)
 
 export default new Router({
@@ -29,14 +31,14 @@ export default new Router({
       component: Movies
     },
     {
-      path: '',
-      name: '',
-      // component: '' 
+      path: '/Settings',
+      name: 'Settings',
+      component: Settings  
     },
     {
-      path: '',
-      name: '',
-      // component: '' 
+      path: '/Profile',
+      name: 'Profile',
+      component: Profile 
     },
   ]
 })

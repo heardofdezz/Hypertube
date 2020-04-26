@@ -25,6 +25,7 @@ Config.db.password +
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then((serverlaunch) => {
+
     //importMovies();
     app.use(movieRouter);
     app.use(commentRouter);

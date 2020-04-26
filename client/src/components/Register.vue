@@ -86,7 +86,12 @@ export default {
         })
         
         this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
+        this.$store.dispatch('setUser', response.data.user).then((result) => {
+          console.log(result)
+        }).catch((err) => {
+          console.log(err)
+        });
+        this.router.push('/Login')
      } catch (error){
        this.error = error.response.data.error
      }    
@@ -108,8 +113,8 @@ export default {
     left: 0;
     padding-top: 90px;
 font-family: 'Bangers', cursive;
-  background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
-    background-size: cover;
+  /* background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
+    background-size: cover; */
     /* background-color: red; */
     transform: scale(1.0);
 }

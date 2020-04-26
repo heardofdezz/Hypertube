@@ -6,7 +6,7 @@
             <v-card class="elevation-12" dark color="rgb(50, 0, 0, 0.7)">
               <v-toolbar color="transparent" flat>
                 <v-spacer></v-spacer>
-                <v-toolbar-title>LOGIN</v-toolbar-title>
+                <v-toolbar-title>Movies List</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
               
@@ -17,8 +17,29 @@
 </template>
 
 <script>
+import MoviesService  from '@/services/UsersService';
+
 export default {
   
+  data(){
+    return {
+      movies: []
+    }
+    console.log('Yooooooooo')
+  },
+  methods:{
+    async MoviesIndex() {
+      const response = await MoviesService.MoviesIndex().then((result) => {
+          
+          this.movies = response.data[0]
+          console.log(response.data[0])
+          console.log('Yooooooooo')
+          console.log(response)
+      }).catch((err) => {
+        console.log(err)
+      });
+    }
+  }
 }
 </script>
 
@@ -27,14 +48,14 @@ export default {
 
 .home {
   width: 100%;
-    height: 100%;
+    height: 10%; 
     position: absolute;
     top: 0;
     left: 0;
 font-family: 'Kameron', serif;
 padding-top: 90px;
-  background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
-    background-size: cover;
+  /* background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
+    background-size: cover; */
     /* background-color: red; */
     transform: scale(1.0);
 }
