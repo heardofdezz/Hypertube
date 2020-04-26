@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
      <page-header/>
    <v-app>
       <v-content>
@@ -23,11 +24,9 @@ export default {
 
 <style>
 #app {
-  /* font-family: 'Avenir', Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   /* margin-top: 60px; */
   width: 100%;
   height: 100%;

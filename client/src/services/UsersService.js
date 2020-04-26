@@ -6,6 +6,9 @@ export default {
     },
     login (informations) {
         return Api().post('login', informations)
+    },
+    verify(informations){
+        return Api().get('verify', informations)
     }
 }
 
