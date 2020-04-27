@@ -52,7 +52,7 @@
                     <div class="error" v-html="error" />
                   <br>
 
-                   <v-btn 
+                   <v-btn
                    @click="register"
                    color="#4CAF50">Sign Up</v-btn>
               </v-card-text>
@@ -84,12 +84,12 @@ export default {
               lastname: this.lastname,
               password: this.password
         })
-        
+
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
      } catch (error){
        this.error = error.response.data.error
-     }    
+     }
         console.log('register button has been clicked', this.email, this.password)
     }
   }
@@ -108,8 +108,8 @@ export default {
     left: 0;
     padding-top: 90px;
 font-family: 'Bangers', cursive;
-  background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
-    background-size: cover;
+  /*background: url( 'https://www.generationcable.net/wp-content/uploads/2017/03/Netflix-Background.jpg') no-repeat center center;
+    background-size: cover;*/
     /* background-color: red; */
     transform: scale(1.0);
 }

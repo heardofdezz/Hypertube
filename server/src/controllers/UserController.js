@@ -1,4 +1,4 @@
-//Session token handler 
+//Session token handler
 const jwt = require('jsonwebtoken')
 const config = require('../config/Config')
 //Password Hashing bcrypt
@@ -16,7 +16,7 @@ function jwtSignUser(user) {
     console.log('user :', user);
     return jwt.sign(user, config.authentification.jwtSecret, {
         expiresIn: ONE_WEEK
-    })  
+    })
 }
 
 module.exports = {
@@ -34,13 +34,13 @@ module.exports = {
                 verify: null,
                 verify_token: randomString(20)
             })
-           sendEmail({
+           /*sendEmail({
                 to:     user.email,
                 from:   'Hypertube Stream',
                 subject: 'Account Activation',
                 html: '<h1>Click to Activate your account!</h1><p><a href="http://localhost:8081/verify/'
                 +user.verify_token+ '">click here !</a></p>',
-           })
+           })*/
             userJson = user.toJSON()
             res.send({
                 user: userJson,
