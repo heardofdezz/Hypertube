@@ -55,7 +55,7 @@
     "vue-style-loader": "3.1.2",
     "vue-template-compiler": "2.6.12",
     "webpack": "5.36.1",
-    "webpack-bundle-analyzer": "4.4.1",
+    "webpack-bundle-analyzer": "4.4.2",
     "webpack-dev-server": "3.11.2",
     "webpack-merge": "4.2.2"
   },
