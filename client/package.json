@@ -39,7 +39,7 @@
     "html-webpack-plugin": "2.30.1",
     "node-notifier": "10.0.0",
     "optimize-css-assets-webpack-plugin": "6.0.0",
-    "ora": "1.4.0",
+    "ora": "5.4.1",
     "portfinder": "1.0.28",
     "postcss-import": "11.1.0",
     "postcss-loader": "5.2.0",
